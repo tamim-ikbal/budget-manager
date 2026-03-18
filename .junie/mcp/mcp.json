@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/tamim/Library/Application Support/Herd/bin/php83",
+            "args": [
+                "/Users/tamim/Herd/budget-manager/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
