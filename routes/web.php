@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CurrencyController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -10,5 +11,17 @@ Route::inertia('/', 'Welcome', [
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'verified', 'admin'])
+    ->group(function (): void {
+        Route::resource('currencies', CurrencyController::class)
+            ->only(['index', 'store', 'update'])
+            ->scoped(['currency' => 'uid']);
+
+        Route::patch('currencies/{currency:uid}/default', [CurrencyController::class, 'setDefault'])
+            ->name('currencies.default.update');
+    });
 
 require __DIR__.'/settings.php';

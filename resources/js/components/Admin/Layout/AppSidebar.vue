@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import {
+    BookOpen,
+    CircleDollarSign,
+    FolderGit2,
+    LayoutGrid,
+} from 'lucide-vue-next';
+import CurrencyController from '@/actions/App/Http/Controllers/Admin/CurrencyController';
 import NavFooter from '@/components/Admin/Layout/NavFooter.vue';
 import NavMain from '@/components/Admin/Layout/NavMain.vue';
 import NavUser from '@/components/Admin/Layout/NavUser.vue';
@@ -22,6 +28,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Currencies',
+        href: CurrencyController.index(),
+        icon: CircleDollarSign,
     },
 ];
 
