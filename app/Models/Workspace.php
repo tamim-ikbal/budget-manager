@@ -50,4 +50,9 @@ class Workspace extends Model
     {
         return $this->hasMany(WorkspaceMember::class);
     }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
 }

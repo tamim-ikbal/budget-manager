@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    FolderGit2,
+    LayoutGrid,
+    Settings,
+    Tags,
+} from 'lucide-vue-next';
+import { computed } from 'vue';
+import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -15,15 +23,51 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import type { NavItem } from '@/types';
+import { edit as editWorkspaceSettings } from '@/routes/workspace-settings';
+import type { Auth, NavGroup, NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+
+const mainNavGroups = computed<NavGroup[]>(() => {
+    const auth = page.props.auth as Auth;
+
+    const platformItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    const workspaceItems: NavItem[] = [
+        {
+            title: 'Category',
+            href: CategoryController.index(),
+            icon: Tags,
+        },
+        {
+            title: 'Settings',
+            href: editWorkspaceSettings(),
+            icon: Settings,
+        },
+    ];
+
+    const groups: NavGroup[] = [
+        {
+            title: 'Platform',
+            items: platformItems,
+        },
+    ];
+
+    if (auth.workspaces.length > 0) {
+        groups.push({
+            title: 'Workspace',
+            items: workspaceItems,
+        });
+    }
+
+    return groups;
+});
 
 const footerNavItems: NavItem[] = [
     {
@@ -54,7 +98,7 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :groups="mainNavGroups" />
         </SidebarContent>
 
         <SidebarFooter>

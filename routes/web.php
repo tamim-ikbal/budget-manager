@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -10,6 +11,10 @@ Route::inertia('/', 'Welcome', [
 
 Route::middleware(['auth', 'verified', 'workspace.context'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+
+    Route::resource('categories', CategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->scoped(['category' => 'uid']);
 });
 
 Route::prefix('admin')
