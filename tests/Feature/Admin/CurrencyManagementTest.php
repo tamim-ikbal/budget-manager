@@ -3,6 +3,7 @@
 use App\Enums\UserRole;
 use App\Models\Currency;
 use App\Models\User;
+use App\Models\Workspace;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
@@ -26,6 +27,17 @@ test('admin can view currencies page', function () {
             ->component('admin/currencies/Index')
             ->has('currencies')
             ->where('status', null),
+        );
+});
+
+test('admin can view admin dashboard', function () {
+    $response = $this->actingAs(adminUser())
+        ->get(route('admin.dashboard'));
+
+    $response
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('admin/Dashboard'),
         );
 });
 
@@ -140,4 +152,54 @@ test('inactive currency cannot be set as default', function () {
         ->assertSessionHasErrors('currency');
 
     expect($targetCurrency->fresh()->is_default)->toBe(0);
+});
+
+test('admin can delete non-default currency', function () {
+    $targetCurrency = Currency::query()->where('is_default', false)->firstOrFail();
+
+    $response = $this->actingAs(adminUser())
+        ->from(route('admin.currencies.index'))
+        ->delete(route('admin.currencies.destroy', ['currency' => $targetCurrency->uid]));
+
+    $response
+        ->assertRedirect(route('admin.currencies.index'))
+        ->assertSessionHasNoErrors();
+
+    expect($targetCurrency->fresh())->toBeNull();
+});
+
+test('default currency cannot be deleted', function () {
+    $defaultCurrency = Currency::query()->where('is_default', true)->firstOrFail();
+
+    $response = $this->actingAs(adminUser())
+        ->from(route('admin.currencies.index'))
+        ->delete(route('admin.currencies.destroy', ['currency' => $defaultCurrency->uid]));
+
+    $response
+        ->assertRedirect(route('admin.currencies.index'))
+        ->assertSessionHasErrors('currency');
+
+    expect($defaultCurrency->fresh())->not->toBeNull();
+});
+
+test('currency in use by workspace cannot be deleted', function () {
+    $targetCurrency = Currency::query()->where('is_default', false)->firstOrFail();
+    $workspaceOwner = User::factory()->create();
+
+    Workspace::query()->create([
+        'user_id' => $workspaceOwner->id,
+        'currency_id' => $targetCurrency->id,
+        'name' => 'Workspace Using Currency',
+        'time_zone' => 'Asia/Dhaka',
+    ]);
+
+    $response = $this->actingAs(adminUser())
+        ->from(route('admin.currencies.index'))
+        ->delete(route('admin.currencies.destroy', ['currency' => $targetCurrency->uid]));
+
+    $response
+        ->assertRedirect(route('admin.currencies.index'))
+        ->assertSessionHasErrors('currency');
+
+    expect($targetCurrency->fresh())->not->toBeNull();
 });

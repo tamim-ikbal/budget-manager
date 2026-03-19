@@ -16,8 +16,10 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'verified', 'admin'])
     ->group(function (): void {
+        Route::inertia('/', 'admin/Dashboard')->name('dashboard');
+
         Route::resource('currencies', CurrencyController::class)
-            ->only(['index', 'store', 'update'])
+            ->only(['index', 'store', 'update', 'destroy'])
             ->scoped(['currency' => 'uid']);
 
         Route::patch('currencies/{currency:uid}/default', [CurrencyController::class, 'setDefault'])

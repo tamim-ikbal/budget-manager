@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Currency\DestroyCurrencyAction;
 use App\Actions\Currency\SetDefaultCurrencyAction;
 use App\Actions\Currency\StoreCurrencyAction;
 use App\Actions\Currency\UpdateCurrencyAction;
@@ -9,6 +10,7 @@ use App\DTOs\Currency\SetDefaultCurrencyData;
 use App\DTOs\Currency\StoreCurrencyData;
 use App\DTOs\Currency\UpdateCurrencyData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\DestroyCurrencyRequest;
 use App\Http\Requests\Admin\SetDefaultCurrencyRequest;
 use App\Http\Requests\Admin\StoreCurrencyRequest;
 use App\Http\Requests\Admin\UpdateCurrencyRequest;
@@ -69,5 +71,12 @@ class CurrencyController extends Controller
         $setDefaultCurrency(new SetDefaultCurrencyData($currency));
 
         return back()->with('status', 'Default currency updated successfully.');
+    }
+
+    public function destroy(DestroyCurrencyRequest $request, Currency $currency, DestroyCurrencyAction $destroyCurrency): RedirectResponse
+    {
+        $destroyCurrency($currency);
+
+        return back()->with('status', 'Currency deleted successfully.');
     }
 }
