@@ -173,28 +173,6 @@ function submitDelete(): void {
     });
 }
 
-function toggleActive(
-    currency: (typeof currencies.value)[number],
-    checked: boolean,
-): void {
-    router.patch(
-        CurrencyController.update.url(currency.uid),
-        {
-            code: currency.code,
-            name: currency.name,
-            symbol: currency.symbol,
-            decimal_places: currency.decimal_places,
-            is_active: checked,
-        },
-        {
-            preserveScroll: true,
-            onError: (errors) => {
-                toast.error(firstError(errors));
-            },
-        },
-    );
-}
-
 function toggleDefault(
     currency: (typeof currencies.value)[number],
     checked: boolean,
@@ -223,13 +201,6 @@ function onEditActiveChange(checked: boolean): void {
     editForm.is_active = checked;
 }
 
-function onRowActiveChange(
-    currency: (typeof currencies.value)[number],
-    checked: boolean,
-): void {
-    toggleActive(currency, checked);
-}
-
 function onRowDefaultChange(
     currency: (typeof currencies.value)[number],
     checked: boolean,
@@ -256,7 +227,7 @@ function onRowDefaultChange(
                             <TableHead>Name</TableHead>
                             <TableHead>Symbol</TableHead>
                             <TableHead>Decimals</TableHead>
-                            <TableHead>Active</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Default</TableHead>
                             <TableHead class="text-right">Actions</TableHead>
                         </TableRow>
@@ -275,25 +246,13 @@ function onRowDefaultChange(
                             <TableCell>{{ currency.symbol }}</TableCell>
                             <TableCell>{{ currency.decimal_places }}</TableCell>
                             <TableCell>
-                                <Switch
-                                    :checked="currency.is_active"
-                                    :disabled="currency.is_default"
-                                    @update:checked="
-                                        onRowActiveChange(
-                                            currency,
-                                            Boolean($event),
-                                        )
-                                    "
-                                />
+                                {{ currency.is_active ? 'Active' : 'Inactive' }}
                             </TableCell>
                             <TableCell>
                                 <Switch
-                                    :checked="currency.is_default"
-                                    :disabled="
-                                        currency.is_default ||
-                                        !currency.is_active
-                                    "
-                                    @update:checked="
+                                    :model-value="currency.is_default"
+                                    :disabled="currency.is_default"
+                                    @update:model-value="
                                         onRowDefaultChange(
                                             currency,
                                             Boolean($event),
@@ -386,8 +345,8 @@ function onRowDefaultChange(
                         <Label for="create-active">Active</Label>
                         <Switch
                             id="create-active"
-                            :checked="createForm.is_active"
-                            @update:checked="
+                            :model-value="createForm.is_active"
+                            @update:model-value="
                                 onCreateActiveChange(Boolean($event))
                             "
                         />
@@ -455,8 +414,8 @@ function onRowDefaultChange(
                         <Label for="edit-active">Active</Label>
                         <Switch
                             id="edit-active"
-                            :checked="editForm.is_active"
-                            @update:checked="
+                            :model-value="editForm.is_active"
+                            @update:model-value="
                                 onEditActiveChange(Boolean($event))
                             "
                         />
