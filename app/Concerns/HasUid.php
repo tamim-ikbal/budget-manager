@@ -2,19 +2,21 @@
 
 namespace App\Concerns;
 
+use Illuminate\Support\Str;
+
 trait HasUid
 {
-    public function boot()
+    public static function bootHasUid(): void
     {
         static::creating(function ($model) {
-            if (!$model->uid) {
+            if (! $model->uid) {
                 $model->uid = $model->generateUid();
             }
         });
     }
 
-    public function generateUid()
+    public function generateUid(): string
     {
-        return uniqid();
+        return (string) Str::uuid();
     }
 }

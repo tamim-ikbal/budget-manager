@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import {
+    BookOpen,
+    CircleDollarSign,
+    FolderGit2,
+    LayoutGrid,
+} from 'lucide-vue-next';
+import CurrencyController from '@/actions/App/Http/Controllers/Admin/CurrencyController';
 import NavFooter from '@/components/Admin/Layout/NavFooter.vue';
 import NavMain from '@/components/Admin/Layout/NavMain.vue';
 import NavUser from '@/components/Admin/Layout/NavUser.vue';
@@ -14,14 +20,19 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard as adminDashboard } from '@/routes/admin';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: adminDashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Currencies',
+        href: CurrencyController.index(),
+        icon: CircleDollarSign,
     },
 ];
 
@@ -45,7 +56,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="adminDashboard()">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

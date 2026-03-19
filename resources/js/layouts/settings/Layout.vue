@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -8,22 +9,38 @@ import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
-import type { NavItem } from '@/types';
+import { edit as editWorkspaceSettings } from '@/routes/workspace-settings';
+import type { Auth, NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: editProfile(),
-    },
-    {
-        title: 'Security',
-        href: editSecurity(),
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-    },
-];
+const page = usePage();
+const auth = computed(() => page.props.auth as Auth);
+const hasWorkspaceAccess = computed(() => auth.value.workspaces.length > 0);
+
+const sidebarNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Profile',
+            href: editProfile(),
+        },
+        {
+            title: 'Security',
+            href: editSecurity(),
+        },
+        {
+            title: 'Appearance',
+            href: editAppearance(),
+        },
+    ];
+
+    if (hasWorkspaceAccess.value) {
+        items.push({
+            title: 'Workspace',
+            href: editWorkspaceSettings(),
+        });
+    }
+
+    return items;
+});
 
 const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>

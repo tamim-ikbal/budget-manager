@@ -24,6 +24,18 @@ Each task is implemented on its own branch from `dev`, merged manually by you, t
 - Shadcn components only from generated `resources/js/components/ui`.
 - Workspace route binding uses UID: `{workspace:uid}`.
 
+### Resource UI Standard (Global, Mandatory for Every Resource Module)
+- Applies to every resource task (currency, workspace entities, budget, category, expense, borrow, admin users, and future resources unless explicitly overridden).
+- Resource listing must use a data table UI.
+- The table header must include a primary `Create` button.
+- `Create` action opens a modal dialog form.
+- Each table row must provide `Edit` and `Delete` actions (based on user permissions).
+- `Edit` action opens a modal dialog form prefilled with row data.
+- `Delete` action must require a confirmation dialog before final delete.
+- Any boolean/special state toggles (for example `default`, `active`, etc.) must be shown as a row-level switcher/toggle control in a dedicated table column.
+- Success/error feedback for resource actions should use toast notifications.
+- Preferred component mapping: data table `radix/data-table`, modal `radix/dialog`, toast `radix/sonner`, confirmation `radix/alert-dialog`.
+
 ### Locked Product Decisions
 - Roles: `SUPER_ADMIN`, `ADMIN`, `USER`.
 - Workspace roles: `Owner`, `Member`.
