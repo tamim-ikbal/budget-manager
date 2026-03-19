@@ -8,6 +8,7 @@ use Illuminate\Console\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['uid', 'user_id', 'currency_id', 'name', 'time_zone'])]
 #[Hidden(['id'])]
@@ -43,5 +44,10 @@ class Workspace extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(WorkspaceMember::class);
     }
 }
